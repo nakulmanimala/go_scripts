@@ -27,7 +27,7 @@ func main() {
 			{
 				Name: aws.String("tag:PROJECT"),
 				Values: []*string{
-					aws.String("STAG-M4MARRY"),
+					aws.String("XXXXXXX"),
 				},
 			},
 		},
