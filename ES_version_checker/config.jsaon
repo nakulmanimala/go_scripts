@@ -1,0 +1,11 @@
+{
+	"Sender": "xxxxxx@xxxx.com",
+	"Recipient1": "nakul@xxx.com",
+	"Recipient2":"xxxxx@xxx.com",
+	"Subject" : "ElasticSearch Software Update",
+	"Mode": "role",
+	"Profile": "aws profile",
+	"Region": "xxxxxxx",
+	"DomainNames": ["xxxxxxxx", "xxxxx"]
+}
+
