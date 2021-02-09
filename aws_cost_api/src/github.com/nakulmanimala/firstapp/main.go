@@ -30,6 +30,20 @@ func main() {
 		panic(err)
 	}
 	svc := costexplorer.New(costSession)
+	inputT := &costexplorer.GetCostAndUsageInput{
+		Filter: &costexplorer.Expression{
+			Tags: &costexplorer.TagValues{
+				Key:    aws.String("PROJECT"),
+				Values: aws.StringSlice([]string{"STAG-LENS", "STAG-LENS-HA"}),
+			},
+		},
+		Metrics: aws.StringSlice([]string{"UnblendedCost"}),
+		TimePeriod: &costexplorer.DateInterval{
+			Start: aws.String("2020-09-01"),
+			End:   aws.String("2020-10-01"),
+		},
+		Granularity: aws.String("MONTHLY"),
+	}
 	input := &costexplorer.GetCostAndUsageInput{
 		Filter: &costexplorer.Expression{
 			Tags: &costexplorer.TagValues{
@@ -56,7 +70,15 @@ func main() {
 		panic(errr)
 	}
 	var output Output
-	//fmt.Println(res.ResultsByTime[0].Groups)
+	//fmt.Println(res.ResultsByTime[0].TimePeriod)
+
+	reqT, resT := svc.GetCostAndUsageRequest(inputT)
+	errrT := reqT.Send()
+	if errrT != nil {
+		panic(errrT)
+	}
+	//fmt.Println(resT.ResultsByTime[0].Total)
+	fmt.Println(*(resT.ResultsByTime[0].Total["UnblendedCost"].Amount))
 	for _, group := range res.ResultsByTime[0].Groups {
 		cost := *group.Metrics["UnblendedCost"].Amount
 		serviceName := *group.Keys[0]
@@ -68,6 +90,8 @@ func main() {
 	}
 	output.Cost.CostUnit = "USD"
 	output.Cost.TimePeriod = "2020-09-01 to 2020-10-01"
+	output.Cost.Metrics = "UnblendedCost"
+	output.Cost.TotalCost = *(resT.ResultsByTime[0].Total["UnblendedCost"].Amount)
 	//fmt.Println(output)
 	out, err := json.Marshal(output)
 	if err != nil {
